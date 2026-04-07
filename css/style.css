@@ -910,6 +910,15 @@ body {
 .feedback-actions {
     display: flex;
     gap: 12px;
+    justify-content: space-between;
+}
+
+.feedback-actions .outline-btn {
+    flex: 1;
+}
+
+.feedback-actions .primary-btn {
+    flex: 2;
 }
 
 /* Completion Panel */

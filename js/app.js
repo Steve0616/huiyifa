@@ -103,6 +103,7 @@ function cacheDOMElements() {
     DOM.diffContent = document.getElementById('diff-content');
     DOM.retryBtn = document.getElementById('retry-btn');
     DOM.hintBtn = document.getElementById('hint-btn');
+    DOM.clearBtn = document.getElementById('clear-btn');
     
     DOM.completionPanel = document.getElementById('completion-panel');
     DOM.completionTime = document.getElementById('completion-time');
@@ -1224,14 +1225,26 @@ function bindEvents() {
         if (e.ctrlKey && e.key === 'Enter') submitBackTranslation();
     });
     
-    // 重试
+    // 继续翻译（保持输入，再次提交）
     DOM.retryBtn.addEventListener('click', () => {
         DOM.feedbackPanel.classList.add('hidden');
         if (AppState.currentStage === 1) {
+            DOM.translationInput.focus();
+        } else {
+            DOM.backTranslationInput.focus();
+        }
+    });
+    
+    // 清除按钮（一键清空输入）
+    DOM.clearBtn.addEventListener('click', () => {
+        DOM.feedbackPanel.classList.add('hidden');
+        if (AppState.currentStage === 1) {
             DOM.translationInput.value = '';
+            DOM.charCount.textContent = '0';
             DOM.translationInput.focus();
         } else {
             DOM.backTranslationInput.value = '';
+            DOM.backCharCount.textContent = '0';
             DOM.backTranslationInput.focus();
         }
     });
