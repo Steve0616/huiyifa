@@ -6,7 +6,7 @@
 class LLMJudge {
     constructor() {
         this.provider = 'siliconflow'; // 默认硅基流动
-        this.apiKey = '';
+        this.apiKey = 'sk-szpmnjoncjhqwemdsazxtbteikaoqauzgkycynzefjdkawfw'; // 默认API Key
         this.model = 'Qwen/Qwen2.5-7B-Instruct'; // 硅基流动默认模型
         
         // 模型映射
