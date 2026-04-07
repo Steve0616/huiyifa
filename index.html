@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>回译训练器 - Back Translation Trainer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 首页 -->
+        <div id="home-screen" class="screen active">
+            <div class="home-container">
+                <header class="home-header">
+                    <div class="logo-section">
+                        <div class="logo-icon">🔄</div>
+                        <h1>回译训练器</h1>
+                        <p class="subtitle">Back Translation Trainer</p>
+                    </div>
+                    <p class="description">通过"原文→翻译→回译"的闭环训练<br>建立精准的双语转换能力</p>
+                </header>
+
+                <div class="home-grid">
+                    <!-- 核心配置卡片 -->
+                    <div class="home-card config-card" id="config-card">
+                        <div class="card-icon">⚙️</div>
+                        <h3>核心配置</h3>
+                        <div class="config-preview" id="config-preview">
+                            <span class="preview-item">MBTI: <strong id="preview-mbti">未设置</strong></span>
+                            <span class="preview-item">词汇量: <strong id="preview-vocab">未设置</strong></span>
+                            <span class="preview-item">置信度: <strong id="preview-threshold">90%</strong></span>
+                        </div>
+                        <button class="card-btn" id="btn-config">编辑配置</button>
+                    </div>
+
+                    <!-- 开始学习卡片 -->
+                    <div class="home-card start-card" id="start-card">
+                        <div class="card-icon">📚</div>
+                        <h3>开始学习</h3>
+                        <p class="card-desc">每日精选语料，循序渐进提升翻译能力</p>
+                        <button class="card-btn primary" id="btn-start">开始练习</button>
+                    </div>
+
+                    <!-- 错题本卡片 -->
+                    <div class="home-card wrong-card" id="wrong-card">
+                        <div class="card-icon">📝</div>
+                        <h3>错题本</h3>
+                        <p class="card-desc">收录练习中的难点，持续巩固</p>
+                        <div class="card-badge" id="wrong-count">0 题</div>
+                        <button class="card-btn" id="btn-wrong">查看错题</button>
+                    </div>
+
+                    <!-- 题库管理卡片 -->
+                    <div class="home-card library-card" id="library-card">
+                        <div class="card-icon">📖</div>
+                        <h3>题库管理</h3>
+                        <p class="card-desc">选择学习模式，导入自定义语料</p>
+                        <button class="card-btn" id="btn-library">进入题库</button>
+                    </div>
+
+                    <!-- 个人中心卡片 -->
+                    <div class="home-card profile-card" id="profile-card">
+                        <div class="card-icon">👤</div>
+                        <h3>个人中心</h3>
+                        <div class="profile-stats-mini">
+                            <div class="mini-stat">
+                                <span class="mini-value" id="stat-total-mini">0</span>
+                                <span class="mini-label">总题数</span>
+                            </div>
+                            <div class="mini-stat">
+                                <span class="mini-value" id="stat-accuracy-mini">0%</span>
+                                <span class="mini-label">准确率</span>
+                            </div>
+                            <div class="mini-stat">
+                                <span class="mini-value" id="stat-streak-mini">0</span>
+                                <span class="mini-label">连续天数</span>
+                            </div>
+                        </div>
+                        <button class="card-btn" id="btn-profile">查看详情</button>
+                    </div>
+
+                    <!-- 设置卡片 -->
+                    <div class="home-card settings-card" id="settings-card">
+                        <div class="card-icon">🔧</div>
+                        <h3>高级设置</h3>
+                        <p class="card-desc">API配置、判断模式、每日目标</p>
+                        <button class="card-btn" id="btn-settings">打开设置</button>
+                    </div>
+                </div>
+
+                <!-- 打卡提醒 -->
+                <div class="checkin-banner" id="checkin-banner">
+                    <span class="checkin-icon">🎯</span>
+                    <span class="checkin-text" id="checkin-text">今日还未打卡</span>
+                    <button class="checkin-btn" id="btn-checkin">立即打卡</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 学习页面 -->
+        <div id="practice-screen" class="screen">
+            <header class="practice-header">
+                <button class="icon-btn back-btn" id="practice-back-btn" title="返回首页">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="header-center">
+                    <h1>回译训练</h1>
+                    <span class="session-info" id="session-info">准备中...</span>
+                </div>
+                <div class="header-right">
+                    <div class="stats-mini">
+                        <span class="stat-item">
+                            <span class="stat-icon">📚</span>
+                            <span id="practice-total">0</span>题
+                        </span>
+                        <span class="stat-item">
+                            <span class="stat-icon">🎯</span>
+                            <span id="practice-avg">0%</span>
+                        </span>
+                    </div>
+                    <button class="icon-btn" id="practice-settings-btn" title="设置">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-info">
+                    <span id="current-question">0 / 0</span>
+                    <span class="threshold-badge" id="threshold-badge">阈值: 90%</span>
+                </div>
+            </div>
+
+            <main class="practice-main">
+                <!-- 阶段1: 原文到中文翻译 -->
+                <div class="stage active" id="stage-1">
+                    <div class="stage-header">
+                        <span class="stage-label">阶段 1/2</span>
+                        <h2>英译中练习</h2>
+                    </div>
+
+                    <div class="corpus-meta">
+                        <span class="meta-tag difficulty" id="corpus-difficulty">-</span>
+                        <span class="meta-tag source" id="corpus-source">-</span>
+                        <span class="meta-tag topic" id="corpus-topic">-</span>
+                    </div>
+
+                    <div class="original-text-container">
+                        <div class="text-label">原文 (英文)</div>
+                        <div class="original-text" id="original-text">
+                            加载中...
+                        </div>
+                    </div>
+
+                    <div class="translation-input-container">
+                        <div class="text-label">你的中文翻译 <span class="char-count"><span id="char-count">0</span> 字</span></div>
+                        <textarea id="translation-input" placeholder="请输入你的中文翻译..." rows="4"></textarea>
+                        <div class="input-hint">按 Ctrl + Enter 提交</div>
+                    </div>
+
+                    <button id="submit-translation" class="primary-btn">
+                        <span>提交翻译</span>
+                    </button>
+                </div>
+
+                <!-- 阶段2: 中文到英文回译 -->
+                <div class="stage" id="stage-2">
+                    <div class="stage-header">
+                        <span class="stage-label">阶段 2/2</span>
+                        <h2>中译英练习 (回译)</h2>
+                    </div>
+
+                    <div class="reference-translation">
+                        <div class="text-label">参考中文</div>
+                        <div class="reference-text" id="reference-text">
+                            <!-- 参考中文翻译 -->
+                        </div>
+                    </div>
+
+                    <div class="translation-input-container">
+                        <div class="text-label">你的英文回译 <span class="char-count"><span id="back-char-count">0</span> chars</span></div>
+                        <textarea id="back-translation-input" placeholder="请将上面的中文翻译回英文..." rows="4"></textarea>
+                        <div class="input-hint">按 Ctrl + Enter 提交</div>
+                    </div>
+
+                    <button id="submit-back-translation" class="primary-btn">
+                        <span>提交回译</span>
+                    </button>
+                </div>
+
+                <!-- 反馈面板 -->
+                <div class="feedback-panel hidden" id="feedback-panel">
+                    <div class="feedback-header">
+                        <div class="confidence-meter" id="confidence-meter">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <path class="circle" id="confidence-circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <text x="18" y="20.35" class="percentage" id="confidence-text">0%</text>
+                            </svg>
+                            <span class="confidence-label">置信度</span>
+                        </div>
+                        <div class="feedback-status" id="feedback-status">
+                            <span class="status-icon">⚠️</span>
+                            <span class="status-text">评判中...</span>
+                        </div>
+                    </div>
+
+                    <div class="diff-analysis" id="diff-analysis">
+                        <h3>差异分析</h3>
+                        <div class="diff-content" id="diff-content">
+                            <!-- Diff分析内容 -->
+                        </div>
+                    </div>
+
+                    <div class="feedback-actions">
+                        <button id="retry-btn" class="secondary-btn">
+                            <span>重新翻译</span>
+                        </button>
+                        <button id="hint-btn" class="outline-btn">
+                            <span>查看提示</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 完成面板 -->
+                <div class="completion-panel hidden" id="completion-panel">
+                    <div class="completion-icon">✅</div>
+                    <h2>本题完成！</h2>
+
+                    <div class="completion-stats">
+                        <div class="stat-card">
+                            <span class="stat-value" id="completion-time">0:00</span>
+                            <span class="stat-label">用时</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="completion-translation-score">0%</span>
+                            <span class="stat-label">翻译得分</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="completion-back-score">0%</span>
+                            <span class="stat-label">回译得分</span>
+                        </div>
+                    </div>
+
+                    <div class="completion-summary" id="completion-summary">
+                        <h3>综合分析</h3>
+                        <div class="summary-content" id="summary-content">
+                            <!-- 综合分析内容 -->
+                        </div>
+                    </div>
+
+                    <div class="completion-actions">
+                        <button id="favorite-btn" class="icon-btn" title="收藏本题">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </button>
+                        <button id="next-question-btn" class="primary-btn">
+                            <span>下一题</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- 题库页面 -->
+        <div id="library-screen" class="screen">
+            <header class="library-header">
+                <button class="icon-btn back-btn" id="library-back-btn" title="返回首页">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1>题库管理</h1>
+            </header>
+
+            <div class="library-content">
+                <!-- 模式选择 -->
+                <div class="library-modes">
+                    <h3>选择学习模式</h3>
+                    <div class="mode-grid" id="mode-grid">
+                        <label class="mode-option active" data-mode="all">
+                            <input type="radio" name="library-mode" value="all" checked>
+                            <span class="mode-card">
+                                <span class="mode-icon">📚</span>
+                                <span class="mode-name">全部</span>
+                                <span class="mode-count" id="count-all">20题</span>
+                            </span>
+                        </label>
+                        <label class="mode-option" data-mode="daily">
+                            <input type="radio" name="library-mode" value="daily">
+                            <span class="mode-card">
+                                <span class="mode-icon">💬</span>
+                                <span class="mode-name">日常口语</span>
+                                <span class="mode-count" id="count-daily">0题</span>
+                            </span>
+                        </label>
+                        <label class="mode-option" data-mode="business">
+                            <input type="radio" name="library-mode" value="business">
+                            <span class="mode-card">
+                                <span class="mode-icon">💼</span>
+                                <span class="mode-name">商务英语</span>
+                                <span class="mode-count" id="count-business">0题</span>
+                            </span>
+                        </label>
+                        <label class="mode-option" data-mode="academic">
+                            <input type="radio" name="library-mode" value="academic">
+                            <span class="mode-card">
+                                <span class="mode-icon">📚</span>
+                                <span class="mode-name">学术论文</span>
+                                <span class="mode-count" id="count-academic">0题</span>
+                            </span>
+                        </label>
+                        <label class="mode-option" data-mode="tech">
+                            <input type="radio" name="library-mode" value="tech">
+                            <span class="mode-card">
+                                <span class="mode-icon">💻</span>
+                                <span class="mode-name">科技数码</span>
+                                <span class="mode-count" id="count-tech">0题</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 语料列表 -->
+                <div class="library-corpus">
+                    <h3>语料列表</h3>
+                    <div class="corpus-list" id="corpus-list">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 导入语料 -->
+                <div class="library-import">
+                    <h3>导入新语料</h3>
+                    <div class="import-methods">
+                        <div class="import-method active" data-method="paste">
+                            <span class="method-icon">📋</span>
+                            <span>粘贴文本</span>
+                        </div>
+                        <div class="import-method" data-method="file">
+                            <span class="method-icon">📁</span>
+                            <span>上传文件</span>
+                        </div>
+                    </div>
+
+                    <div class="import-content" id="import-paste">
+                        <div class="import-row">
+                            <input type="text" id="import-original" placeholder="输入英文原文">
+                        </div>
+                        <div class="import-row">
+                            <input type="text" id="import-translation" placeholder="输入中文翻译（参考答案）">
+                        </div>
+                        <div class="import-row">
+                            <select id="import-difficulty">
+                                <option value="A2">初级 (A2)</option>
+                                <option value="B1" selected>中级 (B1)</option>
+                                <option value="B2">中高级 (B2)</option>
+                                <option value="C1">高级 (C1)</option>
+                            </select>
+                            <select id="import-topic">
+                                <option value="daily">日常口语</option>
+                                <option value="business">商务英语</option>
+                                <option value="academic">学术论文</option>
+                                <option value="tech">科技数码</option>
+                            </select>
+                        </div>
+                        <button id="confirm-import" class="primary-btn">确认导入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 个人中心页面 -->
+        <div id="profile-screen" class="screen">
+            <header class="profile-header">
+                <button class="icon-btn back-btn" id="profile-back-btn" title="返回首页">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1>个人中心</h1>
+            </header>
+
+            <div class="profile-content">
+                <!-- 用户信息 -->
+                <div class="profile-user">
+                    <div class="user-avatar">🧑‍🎓</div>
+                    <div class="user-info">
+                        <h2 id="user-mbti">英语学习者</h2>
+                        <p id="user-vocab">已设置词汇量</p>
+                    </div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="stats-overview">
+                    <div class="overview-card">
+                        <span class="overview-value" id="stat-total">0</span>
+                        <span class="overview-label">总学习题数</span>
+                    </div>
+                    <div class="overview-card">
+                        <span class="overview-value" id="stat-accuracy">0%</span>
+                        <span class="overview-label">平均准确率</span>
+                    </div>
+                    <div class="overview-card">
+                        <span class="overview-value" id="stat-streak">0</span>
+                        <span class="overview-label">连续天数</span>
+                    </div>
+                    <div class="overview-card">
+                        <span class="overview-value" id="stat-time">0h</span>
+                        <span class="overview-label">总学习时长</span>
+                    </div>
+                </div>
+
+                <!-- 打卡日历 -->
+                <div class="checkin-calendar">
+                    <h3>打卡记录</h3>
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 功能入口 -->
+                <div class="profile-actions">
+                    <button class="action-btn" id="btn-favorites">
+                        <span class="action-icon">⭐</span>
+                        <span class="action-text">我的收藏</span>
+                        <span class="action-badge" id="favorites-count">0</span>
+                    </button>
+                    <button class="action-btn" id="btn-profile-wrong">
+                        <span class="action-icon">📝</span>
+                        <span class="action-text">错题本</span>
+                        <span class="action-badge" id="wrong-total-count">0</span>
+                    </button>
+                    <button class="action-btn" id="btn-history">
+                        <span class="action-icon">📊</span>
+                        <span class="action-text">学习历史</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 错题页面 -->
+        <div id="wrong-screen" class="screen">
+            <header class="wrong-header">
+                <button class="icon-btn back-btn" id="wrong-back-btn" title="返回">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1>错题本</h1>
+            </header>
+
+            <div class="wrong-content">
+                <div class="wrong-tabs">
+                    <button class="tab-btn active" data-tab="all">全部错题</button>
+                    <button class="tab-btn" data-tab="translation">翻译错误</button>
+                    <button class="tab-btn" data-tab="back">回译错误</button>
+                </div>
+
+                <div class="wrong-list" id="wrong-list">
+                    <p class="empty-state">暂无错题记录</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配置弹窗 -->
+        <div id="config-modal" class="modal hidden">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <header class="modal-header">
+                    <h2>核心配置</h2>
+                    <button class="icon-btn close-modal" id="close-config">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </header>
+
+                <div class="modal-body">
+                    <div class="config-section">
+                        <h3>1. 选择 MBTI 类型</h3>
+                        <p class="section-hint">不同人格的学习方式和内容偏好不同</p>
+                        <div class="mbti-grid" id="mbti-grid">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <h3>2. 评估词汇量</h3>
+                        <p class="section-hint">推荐适合你水平的语料</p>
+                        <div class="vocabulary-selector" id="vocab-selector">
+                            <label class="vocab-option">
+                                <input type="radio" name="vocabulary" value="2500">
+                                <span class="vocab-card">
+                                    <span class="vocab-label">初级</span>
+                                    <span class="vocab-range">3000 词以下</span>
+                                </span>
+                            </label>
+                            <label class="vocab-option">
+                                <input type="radio" name="vocabulary" value="4000">
+                                <span class="vocab-card">
+                                    <span class="vocab-label">中级</span>
+                                    <span class="vocab-range">3000-5000 词</span>
+                                </span>
+                            </label>
+                            <label class="vocab-option">
+                                <input type="radio" name="vocabulary" value="6500">
+                                <span class="vocab-card">
+                                    <span class="vocab-label">中高级</span>
+                                    <span class="vocab-range">5000-8000 词</span>
+                                </span>
+                            </label>
+                            <label class="vocab-option">
+                                <input type="radio" name="vocabulary" value="9000">
+                                <span class="vocab-card">
+                                    <span class="vocab-label">高级</span>
+                                    <span class="vocab-range">8000+ 词</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <h3>3. 置信度阈值</h3>
+                        <p class="section-hint">达到此阈值才能进入下一步</p>
+                        <div class="threshold-selector">
+                            <input type="range" id="threshold-slider" min="70" max="100" value="90">
+                            <div class="threshold-display">
+                                <span id="threshold-value">90%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button class="secondary-btn" id="skip-config-btn">跳过</button>
+                    <button class="primary-btn" id="save-config-btn">保存配置</button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- 设置弹窗 -->
+        <div id="settings-modal" class="modal hidden">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <header class="modal-header">
+                    <h2>高级设置</h2>
+                    <button class="icon-btn close-modal" id="close-settings">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </header>
+
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label>每日目标</label>
+                        <select id="daily-goal">
+                            <option value="5">5 题</option>
+                            <option value="10" selected>10 题</option>
+                            <option value="20">20 题</option>
+                            <option value="50">50 题</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>AI 判断模型 <span class="setting-hint">(免费)</span></label>
+                        <select id="llm-provider">
+                            <option value="siliconflow">硅基流动</option>
+                            <option value="deepseek">DeepSeek</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>API Key</label>
+                        <input type="password" id="llm-api-key" placeholder="输入你的API Key">
+                        <p class="setting-hint">
+                            <a href="https://cloud.siliconflow.cn" target="_blank">获取硅基流动Key</a> | 
+                            <a href="https://platform.deepseek.com" target="_blank">获取DeepSeek Key</a>
+                        </p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>判断模式</label>
+                        <div class="mode-toggles">
+                            <label>
+                                <input type="radio" name="judge-mode" value="llm" checked> AI智能判断
+                            </label>
+                            <label>
+                                <input type="radio" name="judge-mode" value="rule"> 规则判断(本地)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button class="danger-btn" id="reset-config-btn">重置配置</button>
+                    <button class="primary-btn" id="save-settings-btn">保存设置</button>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Toast 提示 -->
+        <div id="toast" class="toast hidden">
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/corpus.js"></script>
+    <script src="js/diff.js"></script>
+    <script src="js/translator.js"></script>
+    <script src="js/llm.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
