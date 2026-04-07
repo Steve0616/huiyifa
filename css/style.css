@@ -757,8 +757,13 @@ body {
 .input-hint {
     font-size: 0.8rem;
     color: var(--text-muted);
+}
+
+.input-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 8px;
-    text-align: right;
 }
 
 /* Feedback Panel */

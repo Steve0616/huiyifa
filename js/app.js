@@ -95,6 +95,8 @@ function cacheDOMElements() {
     DOM.backTranslationInput = document.getElementById('back-translation-input');
     DOM.backCharCount = document.getElementById('back-char-count');
     DOM.submitBackTranslation = document.getElementById('submit-back-translation');
+    DOM.clearTranslationBtn = document.getElementById('clear-translation-btn');
+    DOM.clearBackBtn = document.getElementById('clear-back-btn');
     
     DOM.feedbackPanel = document.getElementById('feedback-panel');
     DOM.confidenceCircle = document.getElementById('confidence-circle');
@@ -1255,6 +1257,19 @@ function bindEvents() {
             const hint = AppState.currentCorpus.keywords.slice(0, 3).join(', ');
             showToast(`提示关键词: ${hint}`);
         }
+    });
+    
+    // 输入框清除按钮
+    DOM.clearTranslationBtn.addEventListener('click', () => {
+        DOM.translationInput.value = '';
+        DOM.charCount.textContent = '0';
+        DOM.translationInput.focus();
+    });
+    
+    DOM.clearBackBtn.addEventListener('click', () => {
+        DOM.backTranslationInput.value = '';
+        DOM.backCharCount.textContent = '0';
+        DOM.backTranslationInput.focus();
     });
     
     // 下一题/收藏

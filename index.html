@@ -166,7 +166,10 @@
                     <div class="translation-input-container">
                         <div class="text-label">你的中文翻译 <span class="char-count"><span id="char-count">0</span> 字</span></div>
                         <textarea id="translation-input" placeholder="请输入你的中文翻译..." rows="4"></textarea>
-                        <div class="input-hint">按 Ctrl + Enter 提交</div>
+                        <div class="input-actions">
+                            <button id="clear-translation-btn" class="text-btn">清除</button>
+                            <span class="input-hint">按 Ctrl + Enter 提交</span>
+                        </div>
                     </div>
 
                     <button id="submit-translation" class="primary-btn">
@@ -191,7 +194,10 @@
                     <div class="translation-input-container">
                         <div class="text-label">你的英文回译 <span class="char-count"><span id="back-char-count">0</span> chars</span></div>
                         <textarea id="back-translation-input" placeholder="请将上面的中文翻译回英文..." rows="4"></textarea>
-                        <div class="input-hint">按 Ctrl + Enter 提交</div>
+                        <div class="input-actions">
+                            <button id="clear-back-btn" class="text-btn">清除</button>
+                            <span class="input-hint">按 Ctrl + Enter 提交</span>
+                        </div>
                     </div>
 
                     <button id="submit-back-translation" class="primary-btn">

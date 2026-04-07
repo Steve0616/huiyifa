@@ -250,11 +250,11 @@ class CorpusManager {
         const recommendedDiffs = config.getRecommendedDifficulties();
         const recommendedTopics = config.getRecommendedTopics();
 
-        // 合并所有语料源
+        // 合并所有语料源，只保留英译中方向
         const allCorpus = [
             ...this.builtinCorpus,
             ...this.uploadedCorpus.filter(c => c.source === 'upload')
-        ];
+        ].filter(c => c.originalLang === 'en');
 
         // 过滤
         let filtered = allCorpus.filter(item => {
